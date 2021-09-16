@@ -15,6 +15,7 @@ func _process(delta):
 	var target_position = Grid.request_move(self, input_direction)
 	if target_position:
 		move_to(target_position)
+		
 
 func get_input_direction():
 	return Vector2(
@@ -31,9 +32,12 @@ func move_to(target_position):
 	$Tween.interpolate_property(
 		self,"position",
 		position,target_position,
-		0.1,
+		0.2,
 		Tween.TRANS_LINEAR, Tween.EASE_IN)
 
 	$Tween.start()
+	for child in get_parent().get_children():
+		if child != get_node("."):
+			child.draw_path()
 	
 	set_process(true)

@@ -16,3 +16,4 @@ func _ready():
 
 func _on_End_Turn_pressed():
 	get_node("UI").end_of_turn()
+	get_node("TileMap").clear_previous_path_drawing()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://tileset/grid_lines/grid_lines_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://tileset/grid/tileset.tres" type="TileSet" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://TileMap.gd" type="Script" id=8]
 [ext_resource path="res://UI.gd" type="Script" id=9]
 [ext_resource path="res://Game.gd" type="Script" id=10]
+[ext_resource path="res://sprites/character2.png" type="Texture" id=11]
 
 [sub_resource type="TileSet" id=1]
 
@@ -50,8 +51,16 @@ position = Vector2( 34.8316, 33.2835 )
 script = ExtResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="TileMap/CursorMap/Character"]
-position = Vector2( -4.55734, -0.720833 )
+position = Vector2( -1.14267, 3.37675 )
 texture = ExtResource( 5 )
+
+[node name="Character2" type="Position2D" parent="TileMap/CursorMap"]
+position = Vector2( 30.734, 225.187 )
+script = ExtResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="TileMap/CursorMap/Character2"]
+position = Vector2( -0.459778, 1.32793 )
+texture = ExtResource( 11 )
 
 [node name="UI" type="Control" parent="."]
 margin_left = 459.921
@@ -78,6 +87,8 @@ margin_left = 359.419
 margin_top = 264.362
 margin_right = 518.419
 margin_bottom = 313.362
+focus_mode = 0
+enabled_focus_mode = 0
 text = "End Turn"
 __meta__ = {
 "_edit_use_anchors_": false

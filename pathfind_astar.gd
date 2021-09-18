@@ -3,7 +3,7 @@ extends TileMap
 # You can only create an AStar node from code, not from the Scene tab
 onready var astar_node = AStar.new()
 # The Tilemap node doesn't have clear bounds so we're defining the map's limits here
-export(Vector2) var map_size = Vector2(16, 8)
+export(Vector2) var map_size = Vector2(22, 22)
 enum { EMPTY = -1, ACTOR, OBSTACLE, OBJECT}
 
 # The path start and end variables use setter methods
@@ -25,17 +25,6 @@ onready var _half_cell_size = cell_size / 2
 func _ready():
 	var walkable_cells_list = astar_add_walkable_cells(obstacles)
 	astar_connect_walkable_cells(walkable_cells_list)
-
-
-# Click and Shift force the start and end position of the path to update
-# and the node to redraw everything
-#func _input(event):
-#	if event.is_action_pressed('click') and Input.is_key_pressed(KEY_SHIFT):
-#		# To call the setter method from this script we have to use the explicit self.
-#		self.path_start_position = world_to_map(get_global_mouse_position())
-#	elif event.is_action_pressed('click'):
-#		self.path_end_position = world_to_map(get_global_mouse_position())
-
 
 # Loops through all cells within the map's bounds and
 # adds all points to the astar_node, except the obstacles
@@ -113,7 +102,6 @@ func _recalculate_path():
 	# This method gives us an array of points. Note you need the start and end
 	# points' indices as input
 	_point_path = astar_node.get_point_path(start_point_index, end_point_index)
-	print(_point_path)
 	# Redraw the lines and circles from the start to the end point
 	update()
 
@@ -132,9 +120,6 @@ func _draw():
 		return
 	var point_start = _point_path[0]
 	var point_end = _point_path[len(_point_path) - 1]
-
-	set_cell(point_start.x, point_start.y, 1)
-	set_cell(point_end.x, point_end.y, 2)
 
 	var last_point = map_to_world(Vector2(point_start.x, point_start.y)) + _half_cell_size
 	for index in range(1, len(_point_path)):

@@ -10,6 +10,8 @@ func _ready():
 func request_move(pawn, direction):
 	var cell_start = world_to_map(pawn.position)
 	var cell_target = cell_start + direction
+	if get_parent().is_outside_map_bounds(cell_target):
+		return get_global_cursor()
 	return update_cursor_position(pawn, cell_start, cell_target)
 
 func update_cursor_position(pawn, cell_start, cell_target):

@@ -4,6 +4,14 @@ enum CELL_TYPES{ ACTOR, OBSTACLE, OBJECT }
 export(CELL_TYPES) var type = CELL_TYPES.ACTOR
 
 onready var Grid = get_parent()
+onready var DescriptionLabel = get_node("Camera2D/UI/ColorRect/CursorDescription")
+
+var label_dict = {
+			-1: "Ground",
+			0: "Terrain",
+			1: "Farmer",
+			2: "Target Tile"
+		}
 
 func _ready():
 	pass
@@ -14,6 +22,8 @@ func _process(delta):
 		return
 	var target_position = Grid.request_move(self, input_direction)
 	if target_position:
+		var label = label_dict[Grid.get_parent().get_cellv(Grid.world_to_map(target_position))]
+		DescriptionLabel.text = label
 		move_to(target_position)
 		
 
@@ -41,3 +51,7 @@ func move_to(target_position):
 			child.draw_path()
 	
 	set_process(true)
+	
+func _on_End_Turn_pressed():
+#	needs to be here for character end turn loop
+	pass

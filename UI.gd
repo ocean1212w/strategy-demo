@@ -1,7 +1,7 @@
 extends Control
 
 
-onready var curTurnText : Label = get_node("TurnCounter")
+onready var curTurnText : Label = get_node("ColorRect/TurnCounter")
 
 
 # Called when the node enters the scene tree for the first time.
@@ -14,5 +14,4 @@ func _ready():
 #	pass
 
 func end_of_turn():
-	get_parent().current_turn += 1
-	curTurnText.text = "Turn " + str(get_parent().current_turn)
+	curTurnText.text = "Turn " + str(get_node('/root/Game').current_turn)

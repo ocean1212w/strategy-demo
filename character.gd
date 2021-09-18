@@ -18,6 +18,7 @@ var selected = false
 func _ready():
 	_change_state(STATES.IDLE)
 	get_node("Sprite").modulate = Color(0.8,0.8,0.8,0.8)
+	get_parent().get_parent().set_cellv(get_parent().map_to_world(position), 1)
 
 
 func _change_state(new_state):
@@ -35,6 +36,9 @@ func _change_state(new_state):
 
 
 func _process(delta):
+	var grid = get_parent().get_parent()
+	var current_tile = grid.world_to_map(position)
+	grid.set_cellv(current_tile, 1)
 	if not _state == STATES.FOLLOW:
 		if _state == STATES.READY:
 			get_node("Sprite").modulate = Color(1,1,1,0.8)
@@ -54,7 +58,6 @@ func _process(delta):
 func move_to(world_position):
 	var MASS = 10.0
 	var ARRIVE_DISTANCE = 10.0
-
 	var desired_velocity = (world_position - position).normalized() * SPEED
 	var steering = desired_velocity - velocity
 	velocity += steering / MASS

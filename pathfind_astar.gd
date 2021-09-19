@@ -3,7 +3,7 @@ extends TileMap
 # You can only create an AStar node from code, not from the Scene tab
 onready var astar_node = AStar.new()
 # The Tilemap node doesn't have clear bounds so we're defining the map's limits here
-export(Vector2) var map_size = Vector2(22, 22)
+onready var map_size = get_node("/root/Game/GridLines").get_used_rect().end
 enum { EMPTY = -1, ACTOR, OBSTACLE, OBJECT}
 
 # The path start and end variables use setter methods
@@ -113,7 +113,26 @@ func clear_previous_path_drawing():
 	var point_end = _point_path[len(_point_path) - 1]
 	set_cell(point_start.x, point_start.y, -1)
 	set_cell(point_end.x, point_end.y, -1)
-
+	
+func clear_path():
+	clear_previous_path_drawing()
+	_point_path = []
+	update()
+	
+func find_adjacents(world_position):
+	var point = world_to_map(world_position)
+	var points_relative = [
+			Vector2(point.x + 1, point.y),
+			Vector2(point.x - 1, point.y),
+			Vector2(point.x, point.y + 1),
+			Vector2(point.x, point.y - 1)]
+	var adjacents = []
+	for relative_point in points_relative:
+		if get_cell(relative_point.x, relative_point.y) == 1:
+			for child in get_node("CursorMap").get_children():
+				if world_to_map(child.position) == relative_point:
+					adjacents.append(child)
+	return adjacents
 
 func _draw():
 	if not _point_path:
@@ -159,3 +178,13 @@ func _set_path_end_position(value):
 	path_end_position = value
 	if path_start_position != value:
 		_recalculate_path()
+		
+func disable_point(world_vector):
+	var tile_vector = world_to_map(world_vector)
+	var tile_index = calculate_point_index(tile_vector)
+	astar_node.set_point_disabled(tile_index)
+	
+func enable_point(world_vector):
+	var tile_vector = world_to_map(world_vector)
+	var tile_index = calculate_point_index(tile_vector)
+	astar_node.set_point_disabled(tile_index, false)

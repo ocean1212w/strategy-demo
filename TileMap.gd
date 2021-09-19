@@ -22,13 +22,16 @@ func get_global_cursor():
 	return map_to_world(cursor_position) + cell_size/2
 
 func _cursor_check():
+	var selected_child
 	for child in get_children():
 		if child == get_node("Cursor") or child.moved == true:
 			continue
-		if world_to_map(child.position) == cursor_position:
-			print(child.name)
-			selected_position = world_to_map(child.position)
-			child.selected = true
+		elif child.selected:
+			return
+		elif world_to_map(child.position) == cursor_position:
+			selected_child = child
+	if selected_child:
+		selected_child.selected = true
 			
 func _input(event):
 	if event is InputEventKey:

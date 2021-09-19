@@ -25,8 +25,6 @@ func _on_End_Turn_pressed():
 	current_turn += 1
 	curTurnText.text = "Turn " + str(current_turn)
 	var grid = get_node("TileMap")
-	grid.clear_previous_path_drawing()
-	grid._point_path = []
-	grid.update()
+	grid.clear_path()
 	for character in get_node("TileMap/CursorMap").get_children():
 		character._on_End_Turn_pressed()

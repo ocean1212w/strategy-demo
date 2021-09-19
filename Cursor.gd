@@ -5,6 +5,7 @@ export(CELL_TYPES) var type = CELL_TYPES.ACTOR
 
 onready var Grid = get_parent()
 onready var DescriptionLabel = get_node("Camera2D/UI/ColorRect/CursorDescription")
+var paused = false
 
 var label_dict = {
 			-1: "Ground",
@@ -17,6 +18,8 @@ func _ready():
 	pass
 
 func _process(delta):
+	if paused:
+		return
 	var input_direction = get_input_direction()
 	if not input_direction:
 		return
@@ -55,3 +58,9 @@ func move_to(target_position):
 func _on_End_Turn_pressed():
 #	needs to be here for character end turn loop
 	pass
+	
+func pause_cursor():
+	paused = true
+
+func unpause_cursor():
+	paused = false

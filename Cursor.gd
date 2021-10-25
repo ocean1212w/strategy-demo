@@ -13,6 +13,7 @@ var label_dict = {
 			0: "Terrain",
 			2: "Target Tile",
 			3: "Soil",
+			5: "???",
 			6: 'House',
 			7: 'House'
 		}
@@ -84,6 +85,10 @@ func _input(event):
 				$InfoPanels/CharacterPanel.visible = false
 			else:
 				check_for_info_panel(position)
+		elif event.pressed and event.scancode == KEY_R:
+			for character in Grid.get_node('CharacterFactory').get_children():
+				if not character.moved and not character.selected:
+					print('next')
 
 func check_for_info_panel(check_position):
 	for plant in get_parent().get_node("PlantFactory").get_children():

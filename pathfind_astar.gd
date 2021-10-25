@@ -59,11 +59,7 @@ func astar_connect_walkable_cells(points_array):
 		# For every cell in the map, we check the one to the top, right.
 		# left and bottom of it. If it's in the map and not an obstalce,
 		# We connect the current point with it
-		var points_relative = PoolVector2Array([
-			Vector2(point.x + 1, point.y),
-			Vector2(point.x - 1, point.y),
-			Vector2(point.x, point.y + 1),
-			Vector2(point.x, point.y - 1)])
+		var points_relative = find_adjacent_cells(point)
 		for point_relative in points_relative:
 			var point_relative_index = calculate_point_index(point_relative)
 
@@ -129,7 +125,7 @@ func _draw():
 	for index in range(1, len(_point_path)):
 		var current_point = map_to_world(Vector2(_point_path[index].x, _point_path[index].y)) + _half_cell_size
 		var draw_colour
-		if index < get_node("CursorMap/CharacterFactory/Character").max_movement:
+		if index < 8:
 			draw_colour = DRAW_COLOR
 		else:
 			draw_colour = ERROR_COLOR
@@ -169,7 +165,7 @@ func enable_point(world_vector):
 	var tile_index = calculate_point_index(tile_vector)
 	astar_node.set_point_disabled(tile_index, false)
 
-func find_adjacent_cells(world_position):
+func find_adjacent_cell_values(world_position):
 	var point = world_to_map(world_position)
 	var adjacents = {
 		'right': get_cellv(Vector2(point.x + 1, point.y)),
@@ -178,3 +174,10 @@ func find_adjacent_cells(world_position):
 		'up': get_cellv(Vector2(point.x, point.y - 1))
 	}
 	return adjacents
+
+func find_adjacent_cells(point):
+	return PoolVector2Array([
+			Vector2(point.x + 1, point.y),
+			Vector2(point.x - 1, point.y),
+			Vector2(point.x, point.y + 1),
+			Vector2(point.x, point.y - 1)])

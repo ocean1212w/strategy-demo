@@ -12,11 +12,12 @@ var previous_position = Vector2()
 
 var velocity = Vector2()
 
-var max_movement = 8
+var max_movement = 4
 var moved = false
 var selected = false
 var items = []
 var randomiser = RandomNumberGenerator.new()
+var moving = false
 
 onready var _cursor_grid = get_parent().get_parent()
 onready var _tile_grid = _cursor_grid.get_parent()
@@ -60,8 +61,9 @@ func _process(delta):
 		path.remove(0)
 		if len(path) == 0:
 			var adjacent_characters = _cursor_grid.find_adjacents(position)
-			var adjacent_cells = _tile_grid.find_adjacent_cells(position)
+			var adjacent_cells = _tile_grid.find_adjacent_cell_values(position)
 			if len(adjacent_characters) > 0:
+				_cursor_grid.set_cellv(_cursor_grid.world_to_map(adjacent_characters[0].position), -1)
 				adjacent_characters[0].queue_free()
 				print('chomp')
 			if _tile_grid.get_cellv(_tile_grid.world_to_map(position)) == 3:
@@ -70,6 +72,7 @@ func _process(delta):
 						plant.queue_free()
 						print('chomp')
 			_change_state(STATES.IDLE)
+			moving = false
 			return
 		target_point_world = path[0]
 
@@ -89,14 +92,17 @@ func move_to(world_position):
 func start_movement(target, new_path):
 	target_position = target
 	path = new_path
+	moving = true
 	_change_state(STATES.READY)
-
+	while moving:
+		yield(get_tree().create_timer(0.5), "timeout")
+		print('wait')
+	return position
 
 func move(event):
 	previous_position = position
 	_cursor_grid.set_cellv(_cursor_grid.world_to_map(position), -1)
 	_change_state(STATES.FOLLOW)
-	_cursor.pause_cursor()
 
 func _on_End_Turn_pressed():
 	moved = false

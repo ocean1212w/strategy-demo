@@ -1,8 +1,10 @@
 extends Node
 
 var current_turn = 1
+var points = 0
 var player_turn = true
 onready var curTurnText : Label = get_node("TileMap/CursorMap/Cursor/Camera2D/UI/ColorRect/TurnCounter")
+onready var scoreText : Label = get_node("TileMap/CursorMap/Cursor/Camera2D/UI/ColorRect/PointsCounter")
 
 
 func _ready():
@@ -25,6 +27,9 @@ func _on_End_Turn_pressed():
 			character._on_End_Turn_pressed()
 		for plant in get_node("TileMap/CursorMap/PlantFactory").get_children():
 			plant._on_End_Turn_pressed()
-		$TileMap/CursorMap/Cursor.pause_cursor()
 		$TileMap/CursorMap/SlugFactory.enemy_turn()
-		$TileMap/CursorMap/Cursor.unpause_cursor()
+
+
+func add_points(new):
+	points += new
+	scoreText.text = str(points) + ' Harvested'

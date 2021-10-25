@@ -74,7 +74,7 @@ func _process(delta):
 		path.remove(0)
 		if len(path) == 0:
 			var adjacent_characters = _cursor_grid.find_adjacents(position)
-			var adjacent_cells = _tile_grid.find_adjacent_cells(position)
+			var adjacent_cells = _tile_grid.find_adjacent_cell_values(position)
 			var talk_options = [PopupIds.TALK1, PopupIds.TALK2, PopupIds.TALK3, PopupIds.TALK4]
 			for character in adjacent_characters:
 				var option = talk_options[0]
@@ -143,7 +143,8 @@ func _popup_selected(id):
 			if child.position.distance_to(position) < 20:
 				_plant_factory.remove_child(child)
 				items.append('plant')
-
+				get_node("Sprite").modulate = Color(0.5,0.5,0.5,0.5)
+				get_node('/root/Game').add_points(1)
 	if id == PopupIds.CANCEL:
 		moved = false
 		selected = false

@@ -13,7 +13,10 @@ script = ExtResource( 1 )
 position = Vector2( -1.14267, 3.37675 )
 texture = ExtResource( 2 )
 
-[node name="PopupMenu" type="PopupMenu" parent="."]
+[node name="PopupNode" type="Node2D" parent="."]
+z_index = 10
+
+[node name="PopupMenu" type="PopupMenu" parent="PopupNode"]
 margin_left = -103.906
 margin_top = -148.337
 margin_right = -7.90588

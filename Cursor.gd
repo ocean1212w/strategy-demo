@@ -6,12 +6,15 @@ export(CELL_TYPES) var type = CELL_TYPES.ACTOR
 onready var Grid = get_parent()
 onready var DescriptionLabel = get_node("Camera2D/UI/ColorRect/CursorDescription")
 var paused = false
+var info_panel = false
 
 var label_dict = {
 			-1: "Ground",
 			0: "Terrain",
-			1: "Farmer",
-			2: "Target Tile"
+			2: "Target Tile",
+			3: "Soil",
+			6: 'House',
+			7: 'House'
 		}
 
 func _ready():
@@ -24,10 +27,15 @@ func _process(delta):
 	if not input_direction:
 		return
 	var target_position = Grid.request_move(self, input_direction)
+	$InfoPanels/PlantPanel.visible = false
+	$InfoPanels/CharacterPanel.visible = false
 	if target_position:
 		var label = label_dict[Grid.get_parent().get_cellv(Grid.world_to_map(target_position))]
 		DescriptionLabel.text = label
+		check_for_info_panel(target_position)
 		move_to(target_position)
+	else:
+		check_for_info_panel(position)
 		
 
 func get_input_direction():
@@ -49,9 +57,8 @@ func move_to(target_position):
 		Tween.TRANS_LINEAR, Tween.EASE_IN)
 
 	$Tween.start()
-	for child in get_parent().get_children():
-		if child != get_node("."):
-			child.draw_path()
+	for child in get_parent().get_node("CharacterFactory").get_children():
+		child.draw_path()
 	
 	set_process(true)
 	
@@ -61,6 +68,27 @@ func _on_End_Turn_pressed():
 	
 func pause_cursor():
 	paused = true
+	print('pause')
 
 func unpause_cursor():
 	paused = false
+	print('unpause')
+
+func _input(event):
+	if event is InputEventKey and not paused:
+		if event.pressed and event.scancode == KEY_I:
+			info_panel = not info_panel
+			print(info_panel)
+			if not info_panel:
+				$InfoPanels/PlantPanel.visible = false
+				$InfoPanels/CharacterPanel.visible = false
+			else:
+				check_for_info_panel(position)
+
+func check_for_info_panel(check_position):
+	for plant in get_parent().get_node("PlantFactory").get_children():
+		if info_panel and Grid.world_to_map(plant.position) == Grid.world_to_map(check_position):
+			$InfoPanels/PlantPanel.visible = true
+	for character in get_parent().get_node("CharacterFactory").get_children() + get_parent().get_node("SlugFactory").get_children():
+		if info_panel and Grid.world_to_map(character.position) == Grid.world_to_map(check_position):
+			$InfoPanels/CharacterPanel.visible = true

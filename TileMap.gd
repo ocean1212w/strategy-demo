@@ -23,8 +23,8 @@ func get_global_cursor():
 
 func _cursor_check():
 	var selected_child
-	for child in get_children():
-		if child == get_node("Cursor") or child.moved == true:
+	for child in get_node("CharacterFactory").get_children():
+		if child.moved == true:
 			continue
 		elif child.selected:
 			return
@@ -37,3 +37,25 @@ func _input(event):
 	if event is InputEventKey:
 		if event.pressed and event.scancode == KEY_SPACE:
 			_cursor_check()
+			
+func find_adjacents(world_position):
+	var point = world_to_map(world_position)
+	var points_relative = [
+			Vector2(point.x + 1, point.y),
+			Vector2(point.x - 1, point.y),
+			Vector2(point.x, point.y + 1),
+			Vector2(point.x, point.y - 1)]
+	var adjacents = []
+	for relative_point in points_relative:
+		if get_cell(relative_point.x, relative_point.y) == 1:
+			for child in $CharacterFactory.get_children():
+				if world_to_map(child.position) == relative_point:
+					adjacents.append(child)
+	return adjacents
+
+func is_cell_empty(world_position):
+	var tile_position = world_to_map(world_position)
+	return get_cellv(tile_position) == -1
+
+func _draw():
+	pass

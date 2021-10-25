@@ -10,6 +10,8 @@ enum PopupIds {
 	TALK2
 	TALK3
 	TALK4
+	PLANT
+	HARVEST
 	ITEMS
 }
 var _state = null
@@ -24,11 +26,13 @@ var velocity = Vector2()
 var max_movement = 8
 var moved = false
 var selected = false
+var items = []
 
-onready var _pm = $PopupMenu
-onready var _cursor_grid = get_parent()
+onready var _pm = $PopupNode/PopupMenu
+onready var _cursor_grid = get_parent().get_parent()
 onready var _tile_grid = _cursor_grid.get_parent()
 onready var _cursor = _cursor_grid.get_node("Cursor")
+onready var _plant_factory = _cursor_grid.get_node("PlantFactory")
 onready var DescriptionLabel = _cursor_grid.get_node("Cursor/Camera2D/UI/ColorRect/CursorDescription")
 
 func _ready():
@@ -36,26 +40,30 @@ func _ready():
 	get_node("Sprite").modulate = Color(0.8,0.8,0.8,0.8)
 	_default_pm()
 	_pm.connect("id_pressed", self, "_popup_selected")
+	_cursor_grid.set_cellv(_cursor_grid.world_to_map(position), 1)
 
 
 func _change_state(new_state):
 	if new_state == STATES.READY:
-		path = _tile_grid.find_path(position, target_position, max_movement)
+		path = _tile_grid.find_path(position, target_position, max_movement, false)
 		if not path or len(path) == 1:
 			_change_state(STATES.IDLE)
 			return
-		if len(path) < max_movement + 2 and DescriptionLabel.text == 'Ground':
+		if len(path) < max_movement + 2 and _cursor_grid.is_cell_empty(target_position):
 			target_point_world = path[1]
 		else:
 			_change_state(STATES.IDLE)
 			return
 	_state = new_state
+	if new_state == STATES.FOLLOW:
+		_cursor_grid.set_cellv(_cursor_grid.world_to_map(position), -1)
+		_cursor_grid.set_cellv(_cursor_grid.world_to_map(target_position), 1)
 
 
 func _process(delta):
 	var current_tile = _tile_grid.world_to_map(position)
-	_tile_grid.set_cellv(current_tile, 1)
 	if not _state == STATES.FOLLOW:
+		_cursor_grid.set_cellv(current_tile, 1)
 		if _state == STATES.READY:
 			get_node("Sprite").modulate = Color(1,1,1,0.8)
 		return
@@ -65,12 +73,24 @@ func _process(delta):
 	if arrived_to_next_point:
 		path.remove(0)
 		if len(path) == 0:
-			var adjacent_characters = _tile_grid.find_adjacents(position)
-			var options = [PopupIds.TALK1, PopupIds.TALK2, PopupIds.TALK3, PopupIds.TALK4]
+			var adjacent_characters = _cursor_grid.find_adjacents(position)
+			var adjacent_cells = _tile_grid.find_adjacent_cells(position)
+			var talk_options = [PopupIds.TALK1, PopupIds.TALK2, PopupIds.TALK3, PopupIds.TALK4]
 			for character in adjacent_characters:
-				var option = options.pop_front()
+				var option = talk_options[0]
+				talk_options.pop_front()
 				_pm.add_item("Talk to " + character.name, option)
 				_pm.set_item_metadata(option, character)
+			if _tile_grid.get_cellv(_tile_grid.world_to_map(position)) == 3:
+				var planted = false
+				for child in _plant_factory.get_children():
+					if child.position.distance_to(position) < 20:
+						planted = true
+						if child.grown:
+							_pm.add_item("Harvest", PopupIds.HARVEST)
+							_pm.set_item_metadata(PopupIds.HARVEST, child)
+				if not planted:
+					_pm.add_item("Plant here", PopupIds.PLANT)
 			_pm.popup(Rect2(target_point_world, _pm.rect_size))
 			_change_state(STATES.IDLE)
 			return
@@ -98,6 +118,7 @@ func _input(event):
 	if event is InputEventKey and not moved and selected:
 		if event.pressed and event.scancode == KEY_SPACE and _state == STATES.READY:
 			previous_position = position
+			_cursor_grid.set_cellv(_cursor_grid.world_to_map(position), -1)
 			_change_state(STATES.FOLLOW)
 			_cursor.pause_cursor()
 
@@ -111,31 +132,31 @@ func _on_End_Turn_pressed():
 func _popup_selected(id):
 	if id == PopupIds.WAIT:
 		get_node("Sprite").modulate = Color(0.5,0.5,0.5,0.5)
-	if id == PopupIds.TALK1:
-		var character = _pm.get_item_metadata(PopupIds.TALK1)
-		print("talking with " + character.name)
+	if [PopupIds.TALK1, PopupIds.TALK2, PopupIds.TALK3, PopupIds.TALK4].has(id):
+		var character = _pm.get_item_metadata(id)
 		get_node("Sprite").modulate = Color(0.5,0.5,0.5,0.5)
-	if id == PopupIds.TALK2:
-		var character = _pm.get_item_metadata(PopupIds.TALK2)
-		print("talking with " + character.name)
+	if id == PopupIds.PLANT:
+		_plant_factory.spawn_plant(position)
 		get_node("Sprite").modulate = Color(0.5,0.5,0.5,0.5)
-	if id == PopupIds.TALK3:
-		var character = _pm.get_item_metadata(PopupIds.TALK3)
-		print("talking with " + character.name)
-		get_node("Sprite").modulate = Color(0.5,0.5,0.5,0.5)
-	if id == PopupIds.TALK4:
-		var character = _pm.get_item_metadata(PopupIds.TALK4)
-		print("talking with " + character.name)
-		get_node("Sprite").modulate = Color(0.5,0.5,0.5,0.5)
+	if id == PopupIds.HARVEST:
+		for child in _plant_factory.get_children():
+			if child.position.distance_to(position) < 20:
+				_plant_factory.remove_child(child)
+				items.append('plant')
+
 	if id == PopupIds.CANCEL:
 		moved = false
 		selected = false
 		position = previous_position
 		_cursor.position = previous_position
+	if id == PopupIds.ITEMS:
+		print(items)
 	_tile_grid.clear_path()
 	_cursor.unpause_cursor()		
 
 func _default_pm():
 	_pm.clear()
+	_pm.add_item("Inventory", PopupIds.ITEMS)
 	_pm.add_item("Wait", PopupIds.WAIT)
 	_pm.add_item("Cancel", PopupIds.CANCEL)
+

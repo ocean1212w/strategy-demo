@@ -12,6 +12,7 @@ var path_start_position = Vector2() setget _set_path_start_position
 var path_end_position = Vector2() setget _set_path_end_position
 
 var _point_path = []
+var pause_draw = false
 
 const BASE_LINE_WIDTH = 3.0
 const DRAW_COLOR = Color('#fff')
@@ -19,7 +20,7 @@ const ERROR_COLOR = Color('#f00')
 
 # get_used_cells_by_id is a method from the TileMap node
 # here the id 0 corresponds to the grey tile, the obstacles
-onready var obstacles = get_used_cells_by_id(0)
+onready var obstacles = get_used_cells_by_id(0) + get_used_cells_by_id(6)
 onready var _half_cell_size = cell_size / 2
 
 func _ready():
@@ -84,7 +85,8 @@ func calculate_point_index(point):
 	return point.x + map_size.x * point.y
 
 
-func find_path(world_start, world_end, max_movement):
+func find_path(world_start, world_end, max_movement, enemy):
+	pause_draw = enemy
 	self.path_start_position = world_to_map(world_start)
 	self.path_end_position = world_to_map(world_end)
 	_recalculate_path()
@@ -111,31 +113,14 @@ func clear_previous_path_drawing():
 		return
 	var point_start = _point_path[0]
 	var point_end = _point_path[len(_point_path) - 1]
-	set_cell(point_start.x, point_start.y, -1)
-	set_cell(point_end.x, point_end.y, -1)
 	
 func clear_path():
 	clear_previous_path_drawing()
 	_point_path = []
 	update()
-	
-func find_adjacents(world_position):
-	var point = world_to_map(world_position)
-	var points_relative = [
-			Vector2(point.x + 1, point.y),
-			Vector2(point.x - 1, point.y),
-			Vector2(point.x, point.y + 1),
-			Vector2(point.x, point.y - 1)]
-	var adjacents = []
-	for relative_point in points_relative:
-		if get_cell(relative_point.x, relative_point.y) == 1:
-			for child in get_node("CursorMap").get_children():
-				if world_to_map(child.position) == relative_point:
-					adjacents.append(child)
-	return adjacents
 
 func _draw():
-	if not _point_path:
+	if not _point_path or pause_draw:
 		return
 	var point_start = _point_path[0]
 	var point_end = _point_path[len(_point_path) - 1]
@@ -144,7 +129,7 @@ func _draw():
 	for index in range(1, len(_point_path)):
 		var current_point = map_to_world(Vector2(_point_path[index].x, _point_path[index].y)) + _half_cell_size
 		var draw_colour
-		if index < get_node("CursorMap/Character").max_movement:
+		if index < get_node("CursorMap/CharacterFactory/Character").max_movement:
 			draw_colour = DRAW_COLOR
 		else:
 			draw_colour = ERROR_COLOR
@@ -159,9 +144,6 @@ func _set_path_start_position(value):
 		return
 	if is_outside_map_bounds(value):
 		return
-
-	set_cell(path_start_position.x, path_start_position.y, -1)
-	set_cell(value.x, value.y, -1)
 	path_start_position = value
 	if path_end_position and path_end_position != path_start_position:
 		_recalculate_path()
@@ -173,8 +155,6 @@ func _set_path_end_position(value):
 	if is_outside_map_bounds(value):
 		return
 
-	set_cell(path_start_position.x, path_start_position.y, -1)
-	set_cell(value.x, value.y, 2)
 	path_end_position = value
 	if path_start_position != value:
 		_recalculate_path()
@@ -188,3 +168,13 @@ func enable_point(world_vector):
 	var tile_vector = world_to_map(world_vector)
 	var tile_index = calculate_point_index(tile_vector)
 	astar_node.set_point_disabled(tile_index, false)
+
+func find_adjacent_cells(world_position):
+	var point = world_to_map(world_position)
+	var adjacents = {
+		'right': get_cellv(Vector2(point.x + 1, point.y)),
+		'left': get_cellv(Vector2(point.x - 1, point.y)),
+		'down': get_cellv(Vector2(point.x, point.y + 1)),
+		'up': get_cellv(Vector2(point.x, point.y - 1))
+	}
+	return adjacents

@@ -4,7 +4,8 @@ enum CELL_TYPES{ ACTOR, OBSTACLE, OBJECT }
 export(CELL_TYPES) var type = CELL_TYPES.ACTOR
 
 onready var Grid = get_parent()
-onready var DescriptionLabel = get_node("Camera2D/UI/ColorRect/CursorDescription")
+onready var DescriptionLabel = get_node("/root/Game/Camera2D/UI/ColorRect/CursorDescription")
+onready var characters = Grid.get_node('CharacterFactory').get_children()
 var paused = false
 var info_panel = false
 
@@ -13,13 +14,15 @@ var label_dict = {
 			0: "Terrain",
 			2: "Target Tile",
 			3: "Soil",
+			4: "???",
 			5: "???",
 			6: 'House',
 			7: 'House'
 		}
 
 func _ready():
-	pass
+	for character in characters:
+		character.connect("tree_exited", self, "recalculate_characters")
 
 func _process(delta):
 	if paused:
@@ -58,7 +61,7 @@ func move_to(target_position):
 		Tween.TRANS_LINEAR, Tween.EASE_IN)
 
 	$Tween.start()
-	for child in get_parent().get_node("CharacterFactory").get_children():
+	for child in characters:
 		child.draw_path()
 	
 	set_process(true)
@@ -86,14 +89,21 @@ func _input(event):
 			else:
 				check_for_info_panel(position)
 		elif event.pressed and event.scancode == KEY_R:
-			for character in Grid.get_node('CharacterFactory').get_children():
-				if not character.moved and not character.selected:
-					print('next')
+			for character in characters:
+				if not character.moved and not character.selected and not (wtm(position) == wtm(character.position)):
+					position = character.position
+					Grid.update_cursor_position(wtm(position))
 
 func check_for_info_panel(check_position):
 	for plant in get_parent().get_node("PlantFactory").get_children():
 		if info_panel and Grid.world_to_map(plant.position) == Grid.world_to_map(check_position):
 			$InfoPanels/PlantPanel.visible = true
-	for character in get_parent().get_node("CharacterFactory").get_children() + get_parent().get_node("SlugFactory").get_children():
+	for character in characters + get_parent().get_node("SlugFactory").get_children():
 		if info_panel and Grid.world_to_map(character.position) == Grid.world_to_map(check_position):
 			$InfoPanels/CharacterPanel.visible = true
+
+func wtm(point):
+	return Grid.world_to_map(point)
+
+func recalculate_characters():
+	characters = Grid.get_node('CharacterFactory').get_children()

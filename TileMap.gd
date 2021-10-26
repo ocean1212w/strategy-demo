@@ -12,9 +12,9 @@ func request_move(pawn, direction):
 	var cell_target = cell_start + direction
 	if get_parent().is_outside_map_bounds(cell_target):
 		return get_global_cursor()
-	return update_cursor_position(pawn, cell_start, cell_target)
+	return update_cursor_position(cell_target)
 
-func update_cursor_position(pawn, cell_start, cell_target):
+func update_cursor_position(cell_target):
 	cursor_position = cell_target
 	return get_global_cursor()
 

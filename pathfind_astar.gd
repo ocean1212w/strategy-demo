@@ -15,8 +15,6 @@ var _point_path = []
 var pause_draw = false
 
 const BASE_LINE_WIDTH = 3.0
-const DRAW_COLOR = Color('#fff')
-const ERROR_COLOR = Color('#f00')
 
 # get_used_cells_by_id is a method from the TileMap node
 # here the id 0 corresponds to the grey tile, the obstacles
@@ -102,6 +100,7 @@ func _recalculate_path():
 	_point_path = astar_node.get_point_path(start_point_index, end_point_index)
 	# Redraw the lines and circles from the start to the end point
 	update()
+	$LineLayer.draw_path([], _half_cell_size, BASE_LINE_WIDTH)
 
 
 func clear_previous_path_drawing():
@@ -114,24 +113,25 @@ func clear_path():
 	clear_previous_path_drawing()
 	_point_path = []
 	update()
+	$LineLayer.draw_path([], _half_cell_size, BASE_LINE_WIDTH)
 
 func _draw():
 	if not _point_path or pause_draw:
 		return
-	var point_start = _point_path[0]
-	var point_end = _point_path[len(_point_path) - 1]
-
-	var last_point = map_to_world(Vector2(point_start.x, point_start.y)) + _half_cell_size
-	for index in range(1, len(_point_path)):
-		var current_point = map_to_world(Vector2(_point_path[index].x, _point_path[index].y)) + _half_cell_size
-		var draw_colour
-		if index < 8:
-			draw_colour = DRAW_COLOR
-		else:
-			draw_colour = ERROR_COLOR
-		draw_line(last_point, current_point, draw_colour, BASE_LINE_WIDTH, true)
-		draw_circle(current_point, BASE_LINE_WIDTH * 2.0, draw_colour)
-		last_point = current_point
+	$LineLayer.draw_path(_point_path, _half_cell_size, BASE_LINE_WIDTH)
+#	var point_start = _point_path[0]
+#	var point_end = _point_path[len(_point_path) - 1]
+#
+#	var last_point = map_to_world(Vector2(point_start.x, point_start.y)) + _half_cell_size
+#	for index in range(1, len(_point_path)):
+#		var current_point = map_to_world(Vector2(_point_path[index].x, _point_path[index].y)) + _half_cell_size
+#		var draw_colour
+#		if index < 8:
+#			draw_colour = DRAW_COLOR
+#		else:
+#			draw_colour = ERROR_COLOR
+#		$LineLayer.draw_line_and_circle(last_point, current_point, draw_colour, BASE_LINE_WIDTH)
+#		last_point = current_point
 
 
 # Setters for the start and end path values.

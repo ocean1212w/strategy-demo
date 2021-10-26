@@ -23,7 +23,6 @@ onready var _cursor_grid = get_parent().get_parent()
 onready var _tile_grid = _cursor_grid.get_parent()
 onready var _cursor = _cursor_grid.get_node("Cursor")
 onready var _plant_factory = _cursor_grid.get_node("PlantFactory")
-onready var DescriptionLabel = _cursor_grid.get_node("Cursor/Camera2D/UI/ColorRect/CursorDescription")
 
 func _ready():
 	_change_state(STATES.IDLE)
@@ -66,11 +65,12 @@ func _process(delta):
 				_cursor_grid.set_cellv(_cursor_grid.world_to_map(adjacent_characters[0].position), -1)
 				adjacent_characters[0].queue_free()
 				print('chomp')
-			if _tile_grid.get_cellv(_tile_grid.world_to_map(position)) == 3:
+			elif _tile_grid.get_cellv(_tile_grid.world_to_map(position)) == 3:
 				for plant in _plant_factory.get_children():
 					if plant.position.distance_to(position) < 20:
 						plant.queue_free()
 						print('chomp')
+						_tile_grid.set_cellv(_tile_grid.world_to_map(position), -1)
 			_change_state(STATES.IDLE)
 			moving = false
 			return
@@ -92,10 +92,12 @@ func move_to(world_position):
 func start_movement(target, new_path):
 	target_position = target
 	path = new_path
+	_tile_grid.disable_point(target_position)
+	_tile_grid.enable_point(position)
 	moving = true
 	_change_state(STATES.READY)
 	while moving:
-		yield(get_tree().create_timer(0.5), "timeout")
+		yield(get_tree().create_timer(0.8), "timeout")
 		print('wait')
 	return position
 

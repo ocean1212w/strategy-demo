@@ -33,7 +33,6 @@ onready var _cursor_grid = get_parent().get_parent()
 onready var _tile_grid = _cursor_grid.get_parent()
 onready var _cursor = _cursor_grid.get_node("Cursor")
 onready var _plant_factory = _cursor_grid.get_node("PlantFactory")
-onready var DescriptionLabel = _cursor_grid.get_node("Cursor/Camera2D/UI/ColorRect/CursorDescription")
 
 func _ready():
 	_change_state(STATES.IDLE)
@@ -150,6 +149,7 @@ func _popup_selected(id):
 		selected = false
 		position = previous_position
 		_cursor.position = previous_position
+		_cursor_grid.update_cursor_position(previous_position)
 	if id == PopupIds.ITEMS:
 		print(items)
 	_tile_grid.clear_path()

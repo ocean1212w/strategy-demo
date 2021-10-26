@@ -3,8 +3,8 @@ extends Node
 var current_turn = 1
 var points = 0
 var player_turn = true
-onready var curTurnText : Label = get_node("TileMap/CursorMap/Cursor/Camera2D/UI/ColorRect/TurnCounter")
-onready var scoreText : Label = get_node("TileMap/CursorMap/Cursor/Camera2D/UI/ColorRect/PointsCounter")
+onready var curTurnText : Label = get_node("Camera2D/UI/ColorRect/TurnCounter")
+onready var scoreText : Label = get_node("Camera2D/UI/ColorRect/PointsCounter")
 
 
 func _ready():

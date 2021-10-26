@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://tileset/grid_lines/grid_lines_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://tileset/grid/tileset.tres" type="TileSet" id=2]
@@ -10,8 +10,12 @@
 [ext_resource path="res://TileMap.gd" type="Script" id=8]
 [ext_resource path="res://SlugFactory.gd" type="Script" id=9]
 [ext_resource path="res://Game.gd" type="Script" id=10]
+[ext_resource path="res://Camera2D.gd" type="Script" id=11]
+[ext_resource path="res://LineLayer.gd" type="Script" id=12]
 
 [sub_resource type="TileSet" id=1]
+
+[sub_resource type="ShortCut" id=2]
 
 [node name="Game" type="Node"]
 script = ExtResource( 10 )
@@ -76,10 +80,96 @@ z_as_relative = false
 script = ExtResource( 9 )
 
 [node name="Slug" parent="TileMap/CursorMap/SlugFactory" instance=ExtResource( 7 )]
-position = Vector2( 736.737, 157.449 )
+position = Vector2( 678.112, 156.086 )
 
 [node name="Slug2" parent="TileMap/CursorMap/SlugFactory" instance=ExtResource( 7 )]
-position = Vector2( 224.239, 31.5949 )
+position = Vector2( 235.146, 346.531 )
+
+[node name="Slug3" parent="TileMap/CursorMap/SlugFactory" instance=ExtResource( 7 )]
+position = Vector2( 682.328, 477.414 )
 
 [node name="LineLayer" type="Node2D" parent="TileMap"]
-z_index = 1
+z_index = 5
+script = ExtResource( 12 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+script = ExtResource( 11 )
+
+[node name="UI" type="Control" parent="Camera2D"]
+margin_left = 424.333
+margin_top = 235.806
+margin_right = 464.333
+margin_bottom = 275.806
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="Camera2D/UI"]
+margin_left = -934.724
+margin_top = -19.948
+margin_right = 88.2759
+margin_bottom = 64.052
+color = Color( 1, 1, 1, 0.568627 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="End Turn" type="Button" parent="Camera2D/UI/ColorRect"]
+margin_left = 817.908
+margin_top = 20.867
+margin_right = 976.908
+margin_bottom = 69.867
+focus_mode = 0
+enabled_focus_mode = 0
+shortcut = SubResource( 2 )
+text = "End Turn (E)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnCounter" type="Label" parent="Camera2D/UI/ColorRect"]
+margin_left = 34.5582
+margin_top = 28.9143
+margin_right = 251.558
+margin_bottom = 85.9143
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Turn 1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Instructions" type="Label" parent="Camera2D/UI/ColorRect"]
+margin_left = 307.623
+margin_top = 30.6803
+margin_right = 797.623
+margin_bottom = 95.6803
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Move the cursor with the arrow keys, select with space, end turn with 'E'."
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CursorDescription" type="Label" parent="Camera2D/UI/ColorRect"]
+margin_left = 113.469
+margin_top = 29.9878
+margin_right = 255.469
+margin_bottom = 66.9878
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Farmer"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PointsCounter" type="Label" parent="Camera2D/UI/ColorRect"]
+margin_left = 206.574
+margin_top = 30.3812
+margin_right = 287.574
+margin_bottom = 58.3812
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Harvested: 0"
+__meta__ = {
+"_edit_use_anchors_": false
+}

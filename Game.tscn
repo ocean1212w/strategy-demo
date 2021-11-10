@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://tileset/grid_lines/grid_lines_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://tileset/grid/tileset.tres" type="TileSet" id=2]
@@ -16,6 +16,10 @@
 [sub_resource type="TileSet" id=1]
 
 [sub_resource type="ShortCut" id=2]
+
+[sub_resource type="StreamTexture" id=3]
+flags = 4
+load_path = "res://.import/light.png-191c2812e8968dabd6c4fd26c78b4e95.stex"
 
 [node name="Game" type="Node"]
 script = ExtResource( 10 )
@@ -173,3 +177,27 @@ text = "Harvested: 0"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="ColorRect2" type="PopupDialog" parent="Camera2D/UI"]
+visible = true
+margin_left = -871.186
+margin_top = -506.811
+margin_right = 68.8137
+margin_bottom = -38.8107
+popup_exclusive = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Camera2D/UI/ColorRect2"]
+anchor_left = 0.021
+anchor_right = 0.112
+anchor_bottom = 0.043
+margin_left = 127.26
+margin_top = 29.0
+margin_right = 644.72
+margin_bottom = 75.876
+text = "TITLE"
+
+[node name="Light2D" type="Light2D" parent="."]
+position = Vector2( 445.137, 222.228 )
+scale = Vector2( 0.673805, 0.664486 )
+texture = SubResource( 3 )
+shadow_enabled = true

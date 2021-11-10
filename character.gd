@@ -31,6 +31,7 @@ var items = []
 onready var _pm = $PopupNode/PopupMenu
 onready var _cursor_grid = get_parent().get_parent()
 onready var _tile_grid = _cursor_grid.get_parent()
+onready var _root = get_node("/root/Game")
 onready var _cursor = _cursor_grid.get_node("Cursor")
 onready var _plant_factory = _cursor_grid.get_node("PlantFactory")
 
@@ -40,7 +41,7 @@ func _ready():
 	_default_pm()
 	_pm.connect("id_pressed", self, "_popup_selected")
 	_cursor_grid.set_cellv(_cursor_grid.world_to_map(position), 1)
-
+	self.connect("tree_exited", _root, 'state_changed')
 
 func _change_state(new_state):
 	if new_state == STATES.READY:

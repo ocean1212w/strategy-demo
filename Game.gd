@@ -33,3 +33,13 @@ func _on_End_Turn_pressed():
 func add_points(new):
 	points += new
 	scoreText.text = str(points) + ' Harvested'
+
+func state_changed():
+	print('death')
+	if $TileMap/CursorMap/CharacterFactory.get_children() == []:
+		$Camera2D.return_to_cursor()
+		$Camera2D/UI/ColorRect2.popup_centered(get_parent().get_parent().position)
+	elif $TileMap/CursorMap/SlugFactory.get_children() == []:
+		$Camera2D.return_to_cursor()
+		$Camera2D/UI/ColorRect2.popup_centered(get_parent().get_parent().position)
+	print('continue')

@@ -50,6 +50,8 @@ func get_path_towards_closest_character(slug_position, slug_movement):
 		print('plant path')
 		return shortest_path(paths)
 	print('long path')
+	if long_paths == []:
+		return []
 	return shortest_path(long_paths).slice(0,slug_movement)
 
 func shortest_path(paths):

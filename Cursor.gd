@@ -93,6 +93,7 @@ func _input(event):
 				if not character.moved and not character.selected and not (wtm(position) == wtm(character.position)):
 					position = character.position
 					Grid.update_cursor_position(wtm(position))
+				character.selected = false
 
 func check_for_info_panel(check_position):
 	for plant in get_parent().get_node("PlantFactory").get_children():

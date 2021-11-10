@@ -1,10 +1,14 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Slug.gd" type="Script" id=1]
+[ext_resource path="res://watery.tres" type="Material" id=2]
 
 [sub_resource type="StreamTexture" id=1]
 flags = 4
 load_path = "res://.import/character2.png-483f37d43ebc30ed6da5f74b510ab3d9.stex"
+
+[sub_resource type="OccluderPolygon2D" id=2]
+polygon = PoolVector2Array( -38.6549, -36.9051, 41.9504, -0.884583, -24.0452, 48.2343 )
 
 [node name="Slug" type="Position2D"]
 position = Vector2( 737.386, 157.449 )
@@ -12,7 +16,11 @@ z_as_relative = false
 script = ExtResource( 1 )
 
 [node name="SlugSprite" type="Sprite" parent="."]
+material = ExtResource( 2 )
 position = Vector2( -1.14267, 3.37675 )
 scale = Vector2( 1.5, 1.5 )
 z_as_relative = false
 texture = SubResource( 1 )
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+occluder = SubResource( 2 )

@@ -19,6 +19,7 @@ var items = []
 var randomiser = RandomNumberGenerator.new()
 var moving = false
 
+onready var _root = get_node("root/Game")
 onready var _cursor_grid = get_parent().get_parent()
 onready var _tile_grid = _cursor_grid.get_parent()
 onready var _cursor = _cursor_grid.get_node("Cursor")
@@ -28,6 +29,7 @@ func _ready():
 	_change_state(STATES.IDLE)
 	$SlugSprite.modulate = Color(0.8,0.8,0.8,0.8)
 	_cursor_grid.set_cellv(_cursor_grid.world_to_map(position), 1)
+	self.connect("tree_exited", _root, 'state_changed')
 
 
 func _change_state(new_state):
